@@ -1,5 +1,7 @@
 package certificateextractor.controller;
 
+import certificateextractor.service.CertificateExtractorService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,8 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class CertificateExtractorController {
+    @Autowired
+    private CertificateExtractorService service;
+
     @RequestMapping
     public ResponseEntity getUrlCertificate(@RequestParam String url) {
-        return new ResponseEntity("Received:" + url, HttpStatus.OK);
+        return new ResponseEntity(service.getCertificateInfo(url), HttpStatus.OK);
     }
+
+
 }
