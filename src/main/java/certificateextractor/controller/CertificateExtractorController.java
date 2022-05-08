@@ -1,5 +1,6 @@
 package certificateextractor.controller;
 
+import certificateextractor.model.ErrorResponse;
 import certificateextractor.service.CertificateExtractorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class CertificateExtractorController {
 
         } catch (IOException e) {
             LOG.error("Exception caught", e);
-            return new ResponseEntity( HttpStatus.BAD_REQUEST);
+            return new ResponseEntity( new ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 }

@@ -1,8 +1,10 @@
 package certificateextractor.service;
 
 import certificateextractor.model.CertificateInfo;
+import certificateextractor.repo.CertificateInfoRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -19,6 +21,8 @@ import java.util.Date;
 public class CertificateExtractorService {
     private static final Logger LOG = LoggerFactory.getLogger(CertificateExtractorService.class);
 
+    @Autowired
+    private CertificateInfoRepo testRepo;
 
     public CertificateInfo getCertificateInfo(URL url) throws IOException {
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
@@ -40,8 +44,9 @@ public class CertificateExtractorService {
 
             Boolean isValid = isDateValid(validityDate);
 
-            return new CertificateInfo(subject, issuer, isValid);
-
+            CertificateInfo certificateInfo= new CertificateInfo(subject, issuer, isValid);
+            saveToDb(certificateInfo);
+            return certificateInfo;
         } else {
             throw new IOException();
         }
@@ -79,4 +84,13 @@ public class CertificateExtractorService {
     protected boolean isDateValid(Date certificateDate) {
         return certificateDate.getTime() > System.currentTimeMillis();
     }
+
+    private void saveToDb(CertificateInfo newCertificateInfo) {
+        try {
+            testRepo.save(newCertificateInfo);
+        } catch (IllegalArgumentException e) {
+            LOG.error("Something went wrong while saving to db", e);
+        }
+    }
+
 }
